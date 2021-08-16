@@ -6,6 +6,9 @@ const connectDB = require('./config/db')
 const passport = require('passport')
 const session = require('express-session')
 const path = require('path')
+const MongoDbStore = require('connect-mongo');
+const mongoose = require('mongoose')
+
 // load config
 dotenv.config({path: './config/config.env'})
 
@@ -27,12 +30,16 @@ app.engine('.hbs', exphbs({defaultLayout: 'main', extname: '.hbs'}));
 app.set('view engine', '.hbs');
 
 //session middleware
-app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: false,
-    
-  }))
+app.use(
+  session({
+      secret: 'story book',
+      resave: false,
+      saveUninitialized: false,
+      store: MongoDbStore.create({
+          mongoUrl: process.env.MONGO_URI
+      })
+  })
+);
 
 //passport middleware
 app.use(passport.initialize())
